@@ -4,6 +4,15 @@
 
 namespace cache
 {
+    template<typename valType>
+	class Node {
+	public:
+		std::shared_ptr<valType> key = NULL;
+		std::shared_ptr<valType> data = NULL;
+		class std::shared_ptr<Node> prev = NULL;
+		class std::shared_ptr<Node> next = NULL;
+	};
+    
     template<typename keyType,
         typename valType,
         typename hashType = std::hash<keyType>,
@@ -69,7 +78,7 @@ namespace cache
 
                 node->next = head;
                 head->prev = node;
-                outData = node->data;
+                outData = *(node.get()->data.get());
                 head = node;
                 return true;
             }
@@ -105,6 +114,8 @@ private:
              value_t node = std::make_shared<Node<valType>>();
              node.get()->key = std::make_shared<keyType>(inKey);
              node.get()->data = std::make_shared<valType>(inData);
+             node.get()->prev = NULL;
+             node.get()->next = NULL;
              return node;
         }
 
@@ -114,12 +125,12 @@ public:
             auto node = head;
             do 
             {
-                node = node.get()->next;
-                if ( node.get()->next == NULL )
+                node = node->next;
+                if ( node->next == NULL )
                 {
                     // do something
                 }
-            } while (node.get()->next != NULL);
+            } while (node->next != NULL);
         }
         
 private:
