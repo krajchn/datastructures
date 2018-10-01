@@ -76,8 +76,8 @@ namespace cache
             return false;
         }
 
+private:
         void erase () {
-            std::lock_guard<std::mutex> guard(this->mLock);
             cache_t::const_iterator it = mCache.find(*(tail.get()->key.get()));
             if (it != mCache.end())
             {
@@ -91,7 +91,6 @@ namespace cache
 
         bool exists( const keyType &inKey )
         {
-            std::mLockguard<std::mutex> guard(this->mLock);
             cache_t::iterator it = mCache.find(inKey);
             if (it != mCache.end())
             {
@@ -103,13 +102,13 @@ namespace cache
         
         value_t createNode(keyType inKey, valType inData)
         {
-            std::mLockguard<std::mutex> guard(this->mLock);
              value_t node = std::make_shared<Node<valType>>();
              node.get()->key = std::make_shared<keyType>(inKey);
              node.get()->data = std::make_shared<valType>(inData);
              return node;
         }
 
+public:
         void traverse()
         {
             auto node = head;
@@ -123,7 +122,7 @@ namespace cache
             } while (node.get()->next != NULL);
         }
         
-    private:
+private:
         std::mutex mLock;
         cache_t mCache;
         value_t head, tail = NULL;
