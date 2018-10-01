@@ -7,7 +7,7 @@ namespace cache
     template<typename keyType,
         typename valType,
         typename hashType = std::hash<keyType>,
-        typename equalType = std::equal<keyType>>
+        typename equalType = std::equal_to<keyType>>
 
     class LRU {
 
@@ -57,10 +57,19 @@ namespace cache
             if (it != mCache.end())
             {
                 auto node = it->second;
-                node.get()->prev = NULL;
-                node.get()->next = head;
-                head.get()->prev = node;
-                outData = *(node.get()->data.get());
+                if (node->next != NULL) {
+                    // update the links
+                    node->next->prev = node->prev;
+                }
+                node->prev->next = node->next;
+
+                // break the links
+                node->prev = NULL;
+                node->next = NULL;
+
+                node->next = head;
+                head->prev = node;
+                outData = node->data;
                 head = node;
                 return true;
             }
@@ -73,7 +82,7 @@ namespace cache
             if (it != mCache.end())
             {
                 tail->prev->next = NULL;
-                tail = tail->prev->prev;
+                tail = tail->prev;
                 --mSize;
                 mCache.erase(it);
             }
