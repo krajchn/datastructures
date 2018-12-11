@@ -14,6 +14,11 @@ namespace cache
         std::shared_ptr<valType> data;
         class std::shared_ptr<Node<keyType, valType>> prev;
         class std::shared_ptr<Node<keyType, valType>> next;
+        
+        ~Node() {
+			key.reset();
+			data.reset();
+		}
     };
 
     template<typename keyType,
@@ -101,10 +106,10 @@ namespace cache
                     }
                     else {
                         outData = *(node.get()->data);
-                    }
-                }
-                return true;
 
+                    }
+                    return true;
+                }
                 return false;
             }
 
@@ -129,6 +134,7 @@ namespace cache
                     tail.reset();
                     tail = node;
                     --mSize;
+                    it->second.reset();
                     mCache.erase(it);
                 }
 
